@@ -2,13 +2,7 @@ import json
 
 import requests
 
-API_KEY = "454fbbfe5a878f728dbe109f1282fbc2"
-TOKEN_ACCESS = "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"
-STORE_NAME = "antbok"
-store_url = "https://%s:%s@%s.myshopify.com/admin" % (
-    API_KEY, TOKEN_ACCESS, STORE_NAME)
-headers = {"Accept": "application/json", "Content-Type": "application/json"}
-location_id = 67285614766
+
 
 
 def get_location_id():
