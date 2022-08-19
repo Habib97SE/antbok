@@ -1,10 +1,6 @@
 import shopify
 
-API_KEY = "454fbbfe5a878f728dbe109f1282fbc2"
-STORE_NAME = "antbok"
-TOKEN_ACCESS = "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"
-store_url = "https://%s:%s@%s.myshopify.com/admin" % (
-    API_KEY, TOKEN_ACCESS, STORE_NAME)
+
 
 shopify.ShopifyResource.set_site(store_url)
 shop = shopify.Shop.current
