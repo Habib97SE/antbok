@@ -22,12 +22,7 @@ def create_new_product(product: dict):
         Param : new_product : dict : The product to add which should include:
         Return : json : The product id
     """
-    API_KEY = "454fbbfe5a878f728dbe109f1282fbc2"
-    TOKEN_ACCESS = "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"
-    STORE_NAME = "antbok"
-    store_url = "https://%s:%s@%s.myshopify.com/admin" % (
-        API_KEY, TOKEN_ACCESS, STORE_NAME)
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
+   
     data = json.dumps(product)
     product_url = store_url + "/products.json"
     response = requests.post(product_url, data=data, headers=headers)
