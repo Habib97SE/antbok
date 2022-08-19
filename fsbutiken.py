@@ -1,13 +1,37 @@
+import json
 import requests
 import bs4 as bs
 from lxml import html
 import urllib
-import Products as p
 
 session_requests = requests.session()
 BASE_URL = "https://fsbutiken.se"
 
+
+
 image = ""
+
+
+total_products_no = 0
+
+error_books = 0
+
+def create_new_product(product: dict):
+    """
+    Add a new product to the shopify store.
+        Param : new_product : dict : The product to add which should include:
+        Return : json : The product id
+    """
+    API_KEY = "454fbbfe5a878f728dbe109f1282fbc2"
+    TOKEN_ACCESS = "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"
+    STORE_NAME = "antbok"
+    store_url = "https://%s:%s@%s.myshopify.com/admin" % (
+        API_KEY, TOKEN_ACCESS, STORE_NAME)
+    headers = {"Accept": "application/json", "Content-Type": "application/json"}
+    data = json.dumps(product)
+    product_url = store_url + "/products.json"
+    response = requests.post(product_url, data=data, headers=headers)
+    return response.json()
 
 
 def calculate_sell_price(price):
@@ -20,12 +44,28 @@ def calculate_sell_price(price):
     return round(((price * 1.25) + 5) * 1.06) + 1
 
 
-def create_html_table(data):
-    table = "<div class='single_product_special_feature'><ul>"
+def find_number(text: str):
+    text = text.split(" ")
+    for word in text:
+        if word.isdigit():
+            return int(word)
+    return 0
 
+
+def create_inventory(text: str):
+    if "100" in text:
+        return 100
+    if "0" in text:
+        return 0
+    return find_number(text)
+
+
+def create_html_table(data):
+    table = "<br><br><br><br>"
+    table += "<div class='single_product_special_feature'><ul>"
     for key, value in data.items():
         table += "<li>" + "<strong><span class='label'>" + key + "</span>" + "<span class='desc'>" + str(
-            value) + "</span>" + "</li></strong>"
+            value) + "</span>" + "</strong></li>"
     table += "</ul></div>"
     return table
 
@@ -83,7 +123,7 @@ def get_product(isbn):
         img_tag = soup.find("img", {"class": "sizedimg-big"})
         # find the src attribute of the img tag
         img_src = img_tag.get("src")
-        book_info["imgage"] = img_src
+        book_info["image"] = img_src
         div_product = soup.find("div", {"class": "artikelinfo"})
         labels = div_product.find_all("label")
 
@@ -110,6 +150,10 @@ def get_product(isbn):
             if label.text == "F-pris":
                 price = label.find_next_sibling("label").text.split(",")[0]
                 book_info["price"] = calculate_sell_price(price)
+            if label.text == "Säljbart saldo":
+                book_info["stock"] = create_inventory(label.find_next_sibling("label").text)
+                if int(book_info["stock"]) == 0:
+                    continue
             if "Författare" in label.text:
                 book_info["author"] = label.text.split(",")[1].strip()
             if "Illustratör" in label.text:
@@ -156,6 +200,75 @@ def write_to_file(book_info):
         file.write("\n\n\n\n")
 
 
+def upload_products(isbns):
+    print("Total books: ", len(isbns))
+    isbns = remove_duplicates(isbns)
+
+    count = 1
+    print("Total products added: " + str(total_products_no))
+    for isbn in isbns:
+        try:
+            book_info = get_product(str(isbn))
+            print(str(count) + "- Found book: ", book_info["title"])
+            product = {
+                "product": {
+                    "isbn": book_info["isbn"],
+                    "title": book_info["title"],
+                    "body_html": book_info["long_description"],
+                    "vendor": book_info["author"],
+                    "product_type": book_info["book_type"],
+                    "handle": create_handle(book_info["title"]),
+                    "status": "active",
+                    "published_at": book_info["published_on"],
+                    "tags": book_info["categories"],
+                    "Collection": [
+                        {
+                            "title": book_info["categories"][0],
+                            "handle": create_handle(book_info["categories"][0])
+                        }
+                    ],
+                    "options": [
+                        {
+                            "name": "Bokformat",
+                            "values": [
+                                book_info["book_type"],
+                            ]
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "title": book_info["book_type"],
+                            "price": book_info["price"],
+                            "sku": book_info["isbn"],
+                            "option1": book_info["book_type"],
+                            "barcode": book_info["isbn"],
+                            "weight": book_info["weight"],
+                            "weight_unit": "g",
+                            "inventory_quantity": 10,
+                            'fulfillment_service': "manual",
+                            'inventory_management': "shopify",
+                        }
+                    ],
+                    "images": [
+                        {
+                            "alt": book_info["title"] + " av " + book_info["author"],
+                            "src": book_info["image"],
+                            "width": 300,
+                            "height": 370,
+                        },
+                    ],
+                }
+            }
+            print(create_new_product(product))
+        except:
+            with open("error.txt", "a") as f:
+                f.write(str(isbn) + "\n")
+            print("Error", str(isbn))
+
+        finally:
+            count += 1
+
+
 def find_books(url):
     page = 1
     product_exist = True
@@ -179,10 +292,10 @@ def find_books(url):
                     if span.startswith("ISBN"):
                         isbn = span[5:-14]
                         isbns.append(isbn)
-        if page == 500:
-            return isbns
+        upload_products(isbns)
+        isbns = []
         page += 1
-    return isbns
+
 
 
 def create_handle(title):
@@ -193,102 +306,14 @@ def remove_duplicates(list_of_isbns):
     return list(set(list_of_isbns))
 
 
+
 def main():
-    isbns = find_books("https://www.adlibris.com/se/avdelning/skonlitteratur-7380?id=7380&pn=")
-    print("Total books: ", len(isbns))
-    isbns = remove_duplicates(isbns)
-    count = 1
-    for isbn in isbns:
-        book_info = get_product(isbn)
-        if book_info:
-            print(str(count) + "- Found book: ", book_info["title"])
-            try:
-                product = {
-                    "product": {
-                        "isbn": book_info["isbn"],
-                        "title": book_info["title"],
-                        "body_html": book_info["long_description"],
-                        "vendor": book_info["author"],
-                        "product_type": book_info["book_type"],
-                        "handle": create_handle(book_info["title"]),
-                        "status": "active",
-                        "published_at": book_info["published_on"],
-                        "tags": book_info["categories"],
-                        "options": [
-                            {
-                                "name": book_info["Bokformat"],
-                                "values": [
-                                    book_info["book_type"]
-                                ]
-                            }
-                        ],
-                        "variants": [
-                            {
-                                "title": book_info["title"],
-                                "price": book_info["price"],
-                                "sku": book_info["isbn"],
-                                "option1": book_info["book_type"],
-                                "barcode": book_info["isbn"],
-                                "weight": book_info["weight"],
-                            }
-                        ]
-                    }
-                }
-                product_id = p.create_new_product(product)
-                if product_id:
-                    print("Product created with id: ", product_id)
-                else:
-                    print("Product not created")
-                image = {
-                    "image": {
-                        "product_id": product_id,
-                        "alt": book_info["title"] + " av " + book_info["author"],
-                        "src": book_info["imgage"],
-                    }
-                }
-                print(image)
-                image_id = p.create_new_image(product_id, image)
-                if image_id:
-                    print("Image created with id: ", image_id)
-                else:
-                    print("Image not created")
-                variant = {
-                    "variant": {
-                        "option1": book_info["book_type"],
-                        "product_id": product_id,
-                        "title": book_info["book_type"],
-                        "price": book_info["price"],
-                        "barcode": book_info["isbn"],
-                        "weight": float(book_info["weight"]),
-                        "weight_unit": "g",
-                        "image_id": image_id,
-                        "sku": book_info["isbn"],
-                    }
-                }
-                variant_id = p.create_new_variants(product_id, variant)
-                if variant_id:
-                    print("Variant created with id: ", variant_id)
-                else:
-                    print("Variant not created")
-                inventory_item = {
-                    "location_id": p.get_location_id(),
-                    "inventory_item_id": variant_id,
-                    "available_adjustment": 10,
-                }
-                inventory_item = p.create_new_inventory_item(inventory_item)
-                if inventory_item:
-                    print("Inventory item created with inventory item id: ",
-                          inventory_item["inventory_level"]["inventory_item_id"])
-                # Edit the product options and variants
-
-            except:
-                # write isbn in file if error
-                with open("error.txt", "a", encoding="utf-8") as file:
-                    file.write(isbn + "\n")
-
-        else:
-            print("Book not found")
-        count += 1
+    adlibris_base_url = "https://www.adlibris.com/se/avdelning/"
+    categories = ["skonlitteratur-7380", "deckare-kriminalromaner-7383", "biografier-memoarer-7260", "datorer-it-8945", "djur-natur-9307",
+                  "ekonomi-juridik-9675", "familj-halsa-9196", "filosofi-religion-9679", ]
+    for category in categories:
+        identifier = category.split("-")[-1]
+        print(adlibris_base_url + category + "?id=" + identifier + "&pn=")
 
 
 if __name__ == "__main__":

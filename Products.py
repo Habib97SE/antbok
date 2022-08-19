@@ -2,7 +2,13 @@ import json
 
 import requests
 
-
+API_KEY = "454fbbfe5a878f728dbe109f1282fbc2"
+TOKEN_ACCESS = "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"
+STORE_NAME = "antbok"
+store_url = "https://%s:%s@%s.myshopify.com/admin" % (
+    API_KEY, TOKEN_ACCESS, STORE_NAME)
+headers = {"Accept": "application/json", "Content-Type": "application/json"}
+location_id = 67285614766
 
 
 def get_location_id():
@@ -27,6 +33,7 @@ def check_duplicate_product(isbn):
         Param : isbn : str : The isbn of the product to check.
         Return : bool : True if the product already exists, False if not.
     """
+
     product_url = store_url + "/products.json"
     response = requests.get(product_url, headers=headers)
     products = response.json()["products"]
@@ -42,10 +49,15 @@ def create_new_product(product: dict):
         Param : new_product : dict : The product to add which should include:
         Return : json : The product id
     """
+    API_KEY = "454fbbfe5a878f728dbe109f1282fbc2"
+    TOKEN_ACCESS = "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"
+    STORE_NAME = "antbok"
+    store_url = "https://%s:%s@%s.myshopify.com/admin" % (
+        API_KEY, TOKEN_ACCESS, STORE_NAME)
+    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     data = json.dumps(product)
     product_url = store_url + "/products.json"
     response = requests.post(product_url, data=data, headers=headers)
-    print(response.json())
     return response.json()
 
 
@@ -200,7 +212,7 @@ def remove_default_title():
 def update_variant_option(product_id):
     product_url = store_url + "/products/" + str(product_id) + ".json"
     response = requests.get(product_url, headers=headers)
-    print(response.json())
+    return response
 
 
 def get_inventory_item_id(product_id):
@@ -209,27 +221,10 @@ def get_inventory_item_id(product_id):
     return int(response.json()["product"]["variants"][0]["inventory_item_id"])
 
 
-def main():
-    product = {
+def update_inventory_item(product_id):
+    product = get_product(product_id)
+    variants = {
         "product": {
-            "isbn": 9789163892196,
-            "title": "Dino 1-2-3",
-            "body_html": "This is a test",
-            "vendor": "Habib",
-            "product_type": "Inbunden",
-            "handle": "dino-123",
-            "status": "active",
-            "published_at": "2020-01-01T00:00:00.000Z",
-            "tags": "Saga för barn",
-            "Collection": "Saga för barn",
-            "options": [
-                {
-                    "name": "Bokformat",
-                    "values": [
-                        "Inbunden",
-                    ]
-                }
-            ],
             "variants": [
                 {
                     "title": "Inbunden",
@@ -238,28 +233,76 @@ def main():
                     "option1": "Inbunden",
                     "barcode": 9789163892196,
                     "weight": 0.220,
-                }
-            ]
+                    "inventory_quantity": 10,
+                },
+            ],
         }
     }
-    product_id = 7770373193902
-    image = {
-        "image": {
-            "product_id": product_id,
-            "alt": "Dino 1 2 3 av Habib",
-            "src": "https://bilder.forlagssystem.se/9789163892196.jpg",
-            "width": 300,
-            "height": 400,
-        }
-    }
-
-    inventory_item = {
-        "location_id": location_id,
-        "inventory_item_id": get_inventory_item_id(product_id),
-        "available_adjustment": 10
-    }
-    print(create_new_inventory_item(inventory_item))
+    url = store_url + "/api/2022-07/products/" + str(product_id) + ".json"
+    response = requests.put(url, data=json.dumps(variants), headers=headers)
+    return response
 
 
-if __name__ == "__main__":
-    main()
+# def main():
+#     product = {
+#         "product": {
+#             "isbn": 9789163892196,
+#             "title": "Dino 1-2-3",
+#             "body_html": "This is a test",
+#             "vendor": "Habib",
+#             "product_type": "Inbunden",
+#             "handle": "dino-123",
+#             "status": "active",
+#             "published_at": "2020-01-01T00:00:00.000Z",
+#             "tags": "Saga för barn",
+#             "Collection":[
+#                 {
+#                     "title": "Saga för barn",
+#                     "handle": "saga-for-barn"
+#                 }
+#             ],
+#             "options": [
+#                 {
+#                     "name": "Bokformat",
+#                     "values": [
+#                         "Inbunden",
+#                     ]
+#                 }
+#             ],
+#             "variants": [
+#                 {
+#                     "title": "Inbunden",
+#                     "price": "100",
+#                     "sku": 9789163892196,
+#                     "option1": "Inbunden",
+#                     "barcode": 9789163892196,
+#                     "weight": 0.220,
+#                     "weight_unit": "kg",
+#                     "inventory_quantity": 10,
+#                 }
+#             ],
+#             "images": [
+#                 {
+#                     "alt": "Dino 1 2 3 av Habib",
+#                     "src": "https://bilder.forlagssystem.se/9789163892196.jpg",
+#                     "width": 300,
+#                     "height": 400,
+#                 },
+#             ]
+#         }
+#     }
+#     product_id = create_new_product(product)
+#     print(product_id)
+#     image = {
+#         "image": {
+#             "product_id": product_id,
+#             "alt": "Dino 1 2 3 av Habib",
+#             "src": "https://bilder.forlagssystem.se/9789163892196.jpg",
+#             "width": 300,
+#             "height": 400,
+#         }
+#     }
+#
+#
+# if __name__ == "__main__":
+#     main()

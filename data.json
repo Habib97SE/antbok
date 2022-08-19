@@ -1,105 +1,87 @@
 {
-  'id': 7770373193902,
-  'title': 'Dino 1-2-3',
-  'body_html': 'This is a test',
-  'vendor': 'Habib',
-  'product_type': 'Inbunden',
-  'created_at': '2022-08-18T20:00:48+02:00',
-  'handle': 'dino-123',
-  'updated_at': '2022-08-18T20:08:10+02:00',
-  'published_at': '2020-01-01T01:00:00+01:00',
-  'template_suffix': None,
-  'status': 'active',
-  'published_scope': 'web',
-  'tags': 'Saga för barn',
-  'admin_graphql_api_id': 'gid://shopify/Product/7770373193902',
-  'variants': [
-    {
-      'id': 43258448674990,
-      'product_id': 7770373193902,
-      'title': 'Inbunden',
-      'price': '100.00',
-      'sku': '9789163892196',
+  'product': {
+    'id': 7770452820142,
+    'title': 'Dino 1-2-3',
+    'body_html': 'This is a test',
+    'vendor': 'Habib',
+    'product_type': 'Inbunden',
+    'created_at': '2022-08-18T21:41:34+02:00',
+    'handle': 'dino-123',
+    'updated_at': '2022-08-18T21:41:34+02:00',
+    'published_at': '2020-01-01T01:00:00+01:00',
+    'template_suffix': None,
+    'status': 'active',
+    'published_scope': 'web',
+    'tags': 'Saga för barn',
+    'admin_graphql_api_id': 'gid://shopify/Product/7770452820142',
+    'variants': [
+      {
+        'id': 43258684899502,
+        'product_id': 7770452820142,
+        'title': 'Inbunden',
+        'price': '100.00',
+        'sku': '9789163892196',
+        'position': 1,
+        'inventory_policy': 'deny',
+        'compare_at_price': None,
+        'fulfillment_service': 'manual',
+        'inventory_management': None,
+        'option1': 'Inbunden',
+        'option2': None,
+        'option3': None,
+        'created_at': '2022-08-18T21:41:34+02:00',
+        'updated_at': '2022-08-18T21:41:34+02:00',
+        'taxable': True,
+        'barcode': '9789163892196',
+        'grams': 220,
+        'image_id': None,
+        'weight': 0.22,
+        'weight_unit': 'kg',
+        'inventory_item_id': 45335444914350,
+        'inventory_quantity': 10,
+        'old_inventory_quantity': 10,
+        'requires_shipping': True,
+        'admin_graphql_api_id': 'gid://shopify/ProductVariant/43258684899502'
+      }
+    ],
+    'options': [
+      {
+        'id': 9774241874094,
+        'product_id': 7770452820142,
+        'name': 'Bokformat',
+        'position': 1,
+        'values': [
+          'Inbunden'
+        ]
+      }
+    ],
+    'images': [
+      {
+        'id': 32501973385390,
+        'product_id': 7770452820142,
+        'position': 1,
+        'created_at': '2022-08-18T21:41:34+02:00',
+        'updated_at': '2022-08-18T21:41:34+02:00',
+        'alt': 'Dino 1 2 3 av Habib',
+        'width': 1500,
+        'height': 1874,
+        'src': 'https://cdn.shopify.com/s/files/1/0621/4359/4670/products/9789163892196.jpg?v=1660851694',
+        'variant_ids': [],
+        'admin_graphql_api_id': 'gid://shopify/ProductImage/32501973385390'
+      }
+    ],
+    'image': {
+      'id': 32501973385390,
+      'product_id': 7770452820142,
       'position': 1,
-      'inventory_policy': 'deny',
-      'compare_at_price': None,
-      'fulfillment_service': 'manual',
-      'inventory_management': None,
-      'option1': 'Inbunden',
-      'option2': None,
-      'option3': None,
-      'created_at': '2022-08-18T20:00:49+02:00',
-      'updated_at': '2022-08-18T20:00:49+02:00',
-      'taxable': True,
-      'barcode': '9789163892196',
-      'grams': 220,
-      'image_id': None,
-      'weight': 0.22,
-      'weight_unit': 'kg',
-      'inventory_item_id': 45335209476270,
-      'inventory_quantity': 0,
-      'old_inventory_quantity': 0,
-      'requires_shipping': True,
-      'admin_graphql_api_id': 'gid://shopify/ProductVariant/43258448674990'
-    }
-  ],
-  'options': [
-    {
-      'id': 9774154055854,
-      'product_id': 7770373193902,
-      'name': 'Bokformat',
-      'position': 1,
-      'values': [
-        'Inbunden'
-      ]
-    }
-  'images': [
-    {
-      'id': 32501615984814,
-      'product_id': 7770373193902,
-      'position': 1,
-      'created_at': '2022-08-18T20:04:54+02:00',
-      'updated_at': '2022-08-18T20:08:10+02:00',
+      'created_at': '2022-08-18T21:41:34+02:00',
+      'updated_at': '2022-08-18T21:41:34+02:00',
       'alt': 'Dino 1 2 3 av Habib',
-      'width': 300,
-      'height': 400,
-      'src': 'https://cdn.shopify.com/s/files/1/0621/4359/4670/products/9789163892196.jpg?v=1660846090',
+      'width': 1500,
+      'height': 1874,
+      'src': 'https://cdn.shopify.com/s/files/1/0621/4359/4670/products/9789163892196.jpg?v=1660851694',
       'variant_ids': [],
-      'admin_graphql_api_id': 'gid://shopify/ProductImage/32501615984814'
-    };
-
-  'image': {
-    'id': 32501615984814,
-    'product_id': 7770373193902,
-    'position': 1,
-    'created_at': '2022-08-18T20:04:54+02:00',
-    'updated_at': '2022-08-18T20:08:10+02:00',
-    'alt': 'Dino 1 2 3 av Habib',
-    'width': 300,
-    'height': 400,
-    'src': 'https://cdn.shopify.com/s/files/1/0621/4359/4670/products/9789163892196.jpg?v=1660846090',
-    'variant_ids': [],
-    'admin_graphql_api_id': 'gid://shopify/ProductImage/32501615984814'
+      'admin_graphql_api_id': 'gid://shopify/ProductImage/32501973385390'
+    }
   }
-}
-]
-
-
-
-
-
-{
-'image': {
-'id': 32501616804014,
-'product_id': 7770373193902,
-'position': 2,
-'created_at': '2022-08-18T20:05:16+02:00',
-'updated_at': '2022-08-18T20:05:16+02:00',
-'alt': 'Dino 1 2 3 av Habib',
-'width': 1500,
-'height': 1874,
-'src': 'https://cdn.shopify.com/s/files/1/0621/4359/4670/products/9789163892196_34da2383-242f-4d67-a29f-ab213fc98fee.jpg?v=1660845916',
-'variant_ids': [],
-'admin_graphql_api_id': 'gid://shopify/ProductImage/32501616804014'
-}
 }
